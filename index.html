@@ -55,6 +55,21 @@
       background: #cbd5e1;
       border-radius: 2px;
     }
+    /* Animații pentru popup */
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .animate-slide-up {
+      animation: slideUp 0.3s ease-out;
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.2s ease-out;
+    }
   </style>
 </head>
 <body>
@@ -69,6 +84,8 @@
       const [orderNotes, setOrderNotes] = useState("");
       const [address, setAddress] = useState("21 Spring St, Apt 4B, New York, NY 10012");
       const [safeAreaBottom, setSafeAreaBottom] = useState('1rem');
+      const [showOrderConfirmation, setShowOrderConfirmation] = useState(false);
+      const [orderStatus, setOrderStatus] = useState(''); // 'placed', 'preparing', 'delivered'
 
       // Calculează spațiul safe pentru bara de navigare
       useEffect(() => {
@@ -82,6 +99,18 @@
         window.addEventListener('resize', calculateSafeArea);
         return () => window.removeEventListener('resize', calculateSafeArea);
       }, []);
+
+      // Simulează progresul comenzii
+      useEffect(() => {
+        if (orderStatus === 'placed') {
+          const timer = setTimeout(() => setOrderStatus('preparing'), 2000);
+          return () => clearTimeout(timer);
+        }
+        if (orderStatus === 'preparing') {
+          const timer = setTimeout(() => setOrderStatus('delivered'), 3000);
+          return () => clearTimeout(timer);
+        }
+      }, [orderStatus]);
 
       const items = [
         { 
@@ -136,8 +165,118 @@
       const tipAmount = +tip.toFixed(2);
       const total = +(subtotal + discount + deliveryFee + tax + tipAmount).toFixed(2);
 
+      const handlePlaceOrder = () => {
+        setShowOrderConfirmation(true);
+        setOrderStatus('placed');
+      };
+
+      const getStatusMessage = () => {
+        switch(orderStatus) {
+          case 'placed':
+            return { 
+              title: "Order placed!", 
+              message: "Your order has been received by McDonald's",
+              icon: "✅"
+            };
+          case 'preparing':
+            return { 
+              title: "Preparing your order", 
+              message: "McDonald's is getting your food ready",
+              icon: "👨‍🍳"
+            };
+          case 'delivered':
+            return { 
+              title: "Order completed!", 
+              message: "Your food has been delivered. Enjoy your meal!",
+              icon: "🎉"
+            };
+          default:
+            return { 
+              title: "Order placed!", 
+              message: "Your order has been received",
+              icon: "✅"
+            };
+        }
+      };
+
+      const status = getStatusMessage();
+
       return (
-        <div className="w-full h-full max-w-[500px] mx-auto bg-white flex flex-col" style={{ height: '100dvh' }}>
+        <div className="w-full h-full max-w-[500px] mx-auto bg-white flex flex-col relative" style={{ height: '100dvh' }}>
+          {/* Overlay pentru popup */}
+          {showOrderConfirmation && (
+            <div className="absolute inset-0 bg-black bg-opacity-50 z-50 animate-fade-in">
+              {/* Popup de confirmare */}
+              <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl p-6 animate-slide-up">
+                <div className="flex flex-col items-center text-center mb-6">
+                  <div className="text-4xl mb-4">{status.icon}</div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">{status.title}</h2>
+                  <p className="text-gray-600 text-base">{status.message}</p>
+                </div>
+
+                {/* Detaliile comenzii */}
+                <div className="border-t border-gray-200 pt-4 mb-6">
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="text-gray-600">Estimated delivery</span>
+                    <span className="font-semibold">25-35 min</span>
+                  </div>
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="text-gray-600">Order total</span>
+                    <span className="font-bold text-lg">${total.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600">Delivering to</span>
+                    <span className="font-semibold text-right">{address.split(',')[0]}</span>
+                  </div>
+                </div>
+
+                {/* Butoane */}
+                <div className="space-y-3">
+                  <button
+                    className="w-full bg-black text-white py-4 rounded-xl font-semibold text-base"
+                    onClick={() => {
+                      if (orderStatus === 'delivered') {
+                        setShowOrderConfirmation(false);
+                        setOrderStatus('');
+                      }
+                    }}
+                  >
+                    {orderStatus === 'delivered' ? 'Close' : 'Track your order'}
+                  </button>
+                  
+                  {orderStatus !== 'delivered' && (
+                    <button
+                      className="w-full bg-gray-100 text-gray-900 py-4 rounded-xl font-semibold text-base"
+                      onClick={() => setShowOrderConfirmation(false)}
+                    >
+                      Continue browsing
+                    </button>
+                  )}
+                </div>
+
+                {/* Progress bar */}
+                {orderStatus !== 'delivered' && (
+                  <div className="mt-6">
+                    <div className="flex justify-between text-sm text-gray-500 mb-2">
+                      <span>Order placed</span>
+                      <span>Preparing</span>
+                      <span>Delivered</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-green-500 h-2 rounded-full transition-all duration-500"
+                        style={{ 
+                          width: orderStatus === 'placed' ? '33%' : 
+                                 orderStatus === 'preparing' ? '66%' : '100%' 
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Header */}
           <div className="p-4 bg-white border-b border-slate-200 flex-shrink-0">
             <div className="flex items-center justify-between">
@@ -323,7 +462,7 @@
               <div className="flex flex-col items-end">
                 <button
                   className="bg-red-600 text-white px-6 py-3 rounded-xl font-semibold text-base shadow-lg active:bg-red-700"
-                  onClick={() => alert('Order placed (simulation) — not real)')}
+                  onClick={handlePlaceOrder}
                 >
                   Place order
                 </button>
