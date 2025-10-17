@@ -2,7 +2,7 @@
 <html lang="ro">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>McDelivery Mockup</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -13,15 +13,20 @@
       background: #f1f5f9; 
       margin: 0; 
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      /* Elimină scroll-ul din body */
       overflow: hidden;
       height: 100vh;
+      /* Previne problema cu bara de navigare pe iOS */
+      height: 100dvh; /* noua unitate pentru mobile */
     }
     #root {
       width: 100%;
       height: 100vh;
+      height: 100dvh;
     }
-    /* Scroll personalizat pentru a arăta mai bine pe mobile */
+    /* Asigură că footer-ul e safe pentru mobile */
+    .safe-area-inset-bottom {
+      padding-bottom: env(safe-area-inset-bottom);
+    }
     .custom-scroll::-webkit-scrollbar {
       width: 4px;
     }
@@ -38,13 +43,27 @@
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState } = React;
+    const { useState, useEffect } = React;
 
     function FoodieOrderPreview() {
       const [tip, setTip] = useState(0);
       const [notesOpen, setNotesOpen] = useState(false);
       const [orderNotes, setOrderNotes] = useState("");
       const [address, setAddress] = useState("21 Spring St, Apt 4B, New York, NY 10012");
+      const [safeAreaBottom, setSafeAreaBottom] = useState('1rem');
+
+      // Calculează spațiul safe pentru bara de navigare
+      useEffect(() => {
+        const calculateSafeArea = () => {
+          // Pentru iOS și browsere moderne
+          const safeArea = 'env(safe-area-inset-bottom, 1rem)';
+          setSafeAreaBottom(safeArea);
+        };
+        
+        calculateSafeArea();
+        window.addEventListener('resize', calculateSafeArea);
+        return () => window.removeEventListener('resize', calculateSafeArea);
+      }, []);
 
       const items = [
         { 
@@ -100,8 +119,8 @@
       const total = +(subtotal + discount + deliveryFee + tax + tipAmount).toFixed(2);
 
       return (
-        <div className="w-full h-full max-w-[500px] mx-auto bg-white flex flex-col">
-          {/* Header - fixed */}
+        <div className="w-full h-full max-w-[500px] mx-auto bg-white flex flex-col" style={{ height: '100dvh' }}>
+          {/* Header */}
           <div className="p-4 bg-white border-b border-slate-200 flex-shrink-0">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -119,9 +138,9 @@
             </div>
           </div>
 
-          {/* Content - singurul container care se scroll-ează */}
+          {/* Content */}
           <div className="flex-1 overflow-auto custom-scroll">
-            <div className="p-4 space-y-4">
+            <div className="p-4 space-y-4 pb-32"> {/* Mărit padding-bottom */}
               {/* Delivery Address */}
               <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
                 <div className="flex items-start justify-between">
@@ -270,14 +289,14 @@
                   <button className="text-base text-red-600 font-medium">Change</button>
                 </div>
               </div>
-
-              {/* Spațiu pentru footer-ul fixed */}
-              <div className="h-24"></div>
             </div>
           </div>
 
-          {/* Footer - fixed bottom */}
-          <div className="bg-white p-4 border-t border-slate-200 flex-shrink-0">
+          {/* Footer - cu safe area pentru mobile */}
+          <div 
+            className="bg-white p-4 border-t border-slate-200 flex-shrink-0 safe-area-inset-bottom"
+            style={{ paddingBottom: `calc(1rem + ${safeAreaBottom})` }}
+          >
             <div className="flex items-center justify-between mb-3">
               <div>
                 <div className="text-sm text-slate-500">Estimated total</div>
