@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Checkout</title>
   <style>
     /* ---------- SAFE AREAS ---------- */
@@ -36,7 +38,19 @@
     header .back{position:absolute;left:16px;font-size:26px;line-height:1;cursor:pointer}
 
     /* ---------- CONȚINUT ---------- */
-    main{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px}
+   main {
+  position: absolute;
+  top: 60px;     /* păstrăm cât ai tu pentru header */
+  bottom: 0;     /* nu mai folosim 100px hardcoded */
+  left: 0; right: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px;
+
+  /* loc pentru footer: bara aurie + buton ≈ 84px, plus safe-area pe device-urile cu home bar */
+  padding-bottom: calc(84px + env(safe-area-inset-bottom, 0));
+}
+
     h1.store-name{font-size:24px;font-weight:700;margin-bottom:20px}
 
     .cart-item{display:flex;align-items:flex-start;gap:16px;padding-bottom:20px;margin-bottom:20px;border-bottom:1px solid #f0f0f0}
@@ -104,9 +118,12 @@
 
     /* ---------- FOOTER ---------- */
     footer {
-  background:#fff;
-  border-top:1px solid #e6e6e6;
-  padding-bottom: env(safe-area-inset-bottom, 0); /* doar aici aplicăm safe area */
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background-color: #fff;
+  border-top: 1px solid #e6e6e6;
+  /* IMPORTANT: fără padding/margini jos pe footer, ca să nu dublăm safe-area */
+  padding: 0;
   margin: 0;
 }
 
@@ -122,18 +139,23 @@
 }
 
 .place-order {
-  display:block;
-  width:calc(100% - 32px);
-  margin:8px auto;       /* era 10px auto 16px */
-  background:#000;
-  color:#fff;
-  text-align:center;
-  padding:15px 0;
-  border-radius:12px;
-  font-size:17px;
-  font-weight:600;
-  text-decoration:none;
+  display: block;
+  width: calc(100% - 32px);
+  margin: 8px auto 0;     /* jos aproape zero, fără gol */
+  background: #000;
+  color: #fff;
+  text-align: center;
+  padding: 15px 0;
+  border-radius: 12px;
+  font-size: 17px;
+  font-weight: 600;
+  text-decoration: none;
+
+  /* cheia: împingem butonul exact cât safe-area, fără spațiu alb vizibil dedesubt */
+  padding-bottom: calc(15px + env(safe-area-inset-bottom, 0));
 }
+.place-order:active { background:#222; }
+
 
     .saving{background:#b37000;color:#fff;font-size:14px;text-align:center;padding:10px;font-weight:500}
     .place-order{display:block;width:calc(100% - 32px);margin:10px auto 16px;background:#000;color:#fff;text-align:center;padding:15px 0;border-radius:12px;font-size:17px;font-weight:600;text-decoration:none}
