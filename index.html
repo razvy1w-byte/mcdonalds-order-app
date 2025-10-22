@@ -104,7 +104,36 @@
     .cost-item.total>strong:first-child{color:#000}
 
     /* ---------- FOOTER ---------- */
-    footer{background:#fff;border-top:1px solid #e6e6e6}
+    footer {
+  background:#fff;
+  border-top:1px solid #e6e6e6;
+  padding-bottom: calc(var(--safe-bottom) / 2); /* mai mic */
+}
+
+/* Ajustăm puțin spațiile interne */
+.saving {
+  background:#b37000;
+  color:#fff;
+  font-size:14px;
+  text-align:center;
+  padding:8px; /* era 10px */
+  font-weight:500;
+}
+
+.place-order {
+  display:block;
+  width:calc(100% - 32px);
+  margin:8px auto 8px; /* mai mic decât 10px auto 16px */
+  background:#000;
+  color:#fff;
+  text-align:center;
+  padding:14px 0; /* ușor redus */
+  border-radius:12px;
+  font-size:17px;
+  font-weight:600;
+  text-decoration:none;
+}
+
     .saving{background:#b37000;color:#fff;font-size:14px;text-align:center;padding:10px;font-weight:500}
     .place-order{display:block;width:calc(100% - 32px);margin:10px auto 16px;background:#000;color:#fff;text-align:center;padding:15px 0;border-radius:12px;font-size:17px;font-weight:600;text-decoration:none}
     .place-order:active{background:#222}
