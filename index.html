@@ -29,20 +29,29 @@
 
 /* ---------- HEADER ---------- */
 header {
-  height: 56px;
+  height: 56px; /* Înălțimea header-ului */
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 18px;
   font-weight: 600;
-  background: #fff; /* Schimbă transparent la alb */
+  background: #fff; /* Fundal alb */
   border-bottom: 1px solid #e6e6e6;
-  position: fixed; /* Fixează header-ul la vârf */
-  top: 0; /* Asigură-te că este lipit de partea de sus */
+  position: fixed; /* Fixează header-ul la partea de sus */
+  top: 0;
   left: 0;
   right: 0;
-  z-index: 100; /* Asigură-te că este deasupra altor elemente */
+  z-index: 100; /* Asigură-te că header-ul este deasupra altor elemente */
+  padding-top: env(safe-area-inset-top, 10px); /* Adaugă padding pe top pentru telefoane cu notch */
 }
+
+/* Adaugă media query pentru dispozitivele mobile */
+@media (max-width: 768px) {
+  header {
+    padding-top: env(safe-area-inset-top, 10px); /* Ajustează pentru a nu se suprapune cu status bar-ul */
+  }
+}
+
 
     header .back{position:absolute;left:16px;font-size:26px;line-height:1;cursor:pointer}
 
