@@ -27,14 +27,23 @@
       overflow:hidden;                /* doar main derulează */
     }
 
-    /* ---------- HEADER ---------- */
-    header{
-      height:56px;                    /* înălțime vizuală constantă */
-      display:flex;align-items:center;justify-content:center;
-      font-size:18px;font-weight:600;
-      background:#fff;border-bottom:1px solid #e6e6e6;
-      position:relative;
-    }
+/* ---------- HEADER ---------- */
+header {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 600;
+  background: #fff; /* Schimbă transparent la alb */
+  border-bottom: 1px solid #e6e6e6;
+  position: fixed; /* Fixează header-ul la vârf */
+  top: 0; /* Asigură-te că este lipit de partea de sus */
+  left: 0;
+  right: 0;
+  z-index: 100; /* Asigură-te că este deasupra altor elemente */
+}
+
     header .back{position:absolute;left:16px;font-size:26px;line-height:1;cursor:pointer}
 
     /* ---------- CONȚINUT ---------- */
